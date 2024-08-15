@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initPlugin() async {
     final status = await AppTrackingTransparency.trackingAuthorizationStatus;
     if (status == TrackingStatus.notDetermined) {
-      await Future.delayed(const Duration(milliseconds: 200));
+      await Future.delayed(const Duration(seconds: 1));
       await AppTrackingTransparency.requestTrackingAuthorization();
     }
   }
@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    WidgetsBinding.instance?.addPostFrameCallback((_) => initPlugin());
+    initPlugin();
   }
 
   @override
