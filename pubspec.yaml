@@ -44,6 +44,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   google_mobile_ads: ^4.0.0
   pdf_widget_wrapper: ^1.0.4
+  app_tracking_transparency: ^2.0.6
 
 dev_dependencies:
   flutter_test:

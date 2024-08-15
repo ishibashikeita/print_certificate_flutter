@@ -8,6 +8,7 @@ import 'package:print_certificate_flutter/const.dart';
 import 'package:provider/provider.dart';
 import 'certificate_data.dart';
 import 'templates.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +16,27 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<void> initPlugin() async {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status == TrackingStatus.notDetermined) {
+      await Future.delayed(const Duration(milliseconds: 200));
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance?.addPostFrameCallback((_) => initPlugin());
+  }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
