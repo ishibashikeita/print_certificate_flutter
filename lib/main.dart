@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:print_certificate_flutter/const.dart';
@@ -10,10 +11,23 @@ import 'certificate_data.dart';
 import 'templates.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
+void main() async {
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  await initPlugin();
+
   runApp(MyApp());
+}
+
+Future<void> initPlugin() async {
+  final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+  if (status == TrackingStatus.notDetermined) {
+    await Future.delayed(const Duration(seconds: 1));
+    await AppTrackingTransparency.requestTrackingAuthorization();
+    await MobileAds.instance.initialize();
+    FlutterNativeSplash.remove();
+  }
 }
 
 class MyApp extends StatefulWidget {
@@ -22,19 +36,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Future<void> initPlugin() async {
-    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
-    if (status == TrackingStatus.notDetermined) {
-      await Future.delayed(const Duration(seconds: 1));
-      await AppTrackingTransparency.requestTrackingAuthorization();
-    }
-  }
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    initPlugin();
   }
 
   @override
